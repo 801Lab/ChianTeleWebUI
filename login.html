@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/login.css">
+    <title>登录界面</title>
+    <style>
+        body{
+            background: url("imgs/background.png") no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            -o-background-size: cover;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="loginContainer" style="position: absolute;">
+    <div class="loginMain">
+        <div class="loginLogo">
+            <img src="imgs/loginLogo.png" alt="loginLogo" >
+        </div>
+        <div class="imputText">
+            <!-- 用户名输入部分-->
+            <div class="loginUserName">
+                <div class="user">
+                    <img src="imgs/userLogin.png" alt="">
+                    <input type="text" class="loginUserText" placeholder="用户名">
+                </div>
+                <!--忘记用户名-->
+                <div class="needPrompt">
+                    <a href="#">忘记用户名？</a>
+                </div>
+            </div>
+            <!-- 密码输入部分-->
+            <div class="passwordText">
+                <div class = "beforeEye">
+                    <img src="imgs/password.png" alt="">
+                    <input type="password" class="password" placeholder="密码">
+                </div>
+                <img src="imgs/eyeClose.png" alt="" id = "loginEyePassword">
+            </div>
+            <!--忘记密码-->
+            <div class="needPrompt">
+                <a href="#">忘记密码？</a>
+            </div>
+        </div>
+        <!--登录按钮-->
+        <div class = "loginButton row">
+            <a href="archivesManagement.html">
+                <button type="button" class="btn btn-info btn-lg " id="loginBut">登录</button>
+            </a>
+        </div>
+        <!--需要帮助-->
+        <div class="needPrompt">
+            <a href="#">需要帮助？</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src = "js/bootstrap.min.js"></script>
+<script src = "js/index.js"></script>
+</body>
+</html>

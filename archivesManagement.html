@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>档案管理</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="layui-v2.5.4/layui/css/layui.css">
+    <link rel="stylesheet" href="ztree/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="ztree/css/metroStyle/metroStyle.css" type="text/css">
+    <link rel="stylesheet" href="css/index.css">
+    <style>
+        .btn{
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <!--导航-->
+    <div class="layui-row">
+        <div class="layui-col-lg12">
+            <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#example-navbar-collapse" aria-expanded="false">
+                            <span class="sr-only">切换导航</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a href="#" class="navbar-brand">
+                            <img src="imgs/logo.jpg" alt="中国电信图标" style="width:45px;height:45px;position: relative;top: -10px" >
+                        </a>
+                    </div>
+                    <div class="navbar-container">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="archivesManagement.html">档案管理</a></li>
+                            <li><a href="wageManagement_theImportInterface.html">工资管理</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="font-size: 13px;">
+                                    考评管理 <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <ol><a href="appraisalManagement.html">考评管理</a></ol>
+                                    <ol><a href="appraisalChart.html">月考评图</a></ol>
+                                    <ol><a href="">季度考评图</a></ol>
+                                    <ol class="divider"></ol>
+                                    <ol><a href="#">半年考评图</a></ol>
+                                    <ol><a href="#">一年考评图</a></ol>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="#"><img src="imgs/个人设置.png"alt="个人设置"></a></li>
+                                <li><a href="#" style="font-size: 18px;">英文</a></li>
+                            </ul>
+                            <form class="navbar-form navbar-right">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!--搜索、编辑、完成、折叠、档案界面-->
+    <div class="layui-row" id = "mainContainer">
+            <!--搜索、编辑、完成、折叠-->
+            <div class="layui-col-md3" id = "leftTreeNav">
+                <div class="layui-row grid-demo">
+                    <div class="leftSection">
+                        <!--功能键-->
+                        <div class="anotherSearch layui-row">
+                            <!--搜索-->
+                            <input type="text" class="form-control layui-col-md8" placeholder="名字或工号" id = "searchContent">
+                            <!--完成-->
+                            <div class = "animal layui-col-md2 layui-col-md-offset2">
+                                <ul class="site-doc-icon site-doc-anim">
+                                    <img class="layui-anim" data-anim="layui-anim-scaleSpring" src="imgs/confirm.png" alt="" id = "searchConfirm">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!--树状导航-->
+                        <div class="leftNavbar">
+                            <div class="panel-group layui-col-space5" id="accordion">
+                                <div class="content_wrap">
+                                    <div class="zTreeDemoBackground left">
+                                        <ul id="treeDemo" class="ztree"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--选择导入属性-->
+                </div>
+            </div>
+
+            <!--档案-->
+            <div class="layui-col-md7 layui-col-md-offset1" id = "rightMain">
+                <div class="main">
+                    <div class = "head"></div>
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class = "tableHead" colspan = "4">
+                                <h4>基础信息</h4>
+                            </td>
+                            <td rowspan="4"  class="layui-row">
+                                <div class = "layui-col-md12 layui-upload">
+                                    <div class="layui-upload-list">
+                                        <img class="layui-upload-img" id="demo1">
+                                        <p id="demoText"></p>
+                                    </div>
+                                    <button type="button" class="layui-btn" id="upPhoto">上传图片</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>姓名</td>
+                            <td><input class = "form-control"type="text" id = "name" disabled = true></td>
+                            <td>身份证号</td>
+                            <td><input class = "form-control" type="text" id = "idNumber" disabled = true></td>
+                        </tr>
+                        <tr>
+                            <td>性别</td>
+                            <td>
+                                <select class="selectpicker form-control" style="text-align: center" id = "genderSelect" disabled="true">
+                                    <option>男</option>
+                                    <option>女</option>
+                                </select>
+                            </td>
+                            <td>手机号</td>
+                            <td><input class = "form-control" type="text" id = "phoneNumber" disabled = true></td>
+                        </tr>
+                        <tr>
+                            <td>工号</td>
+                            <td><input class = "form-control" type="text" id = "jobNumber" disabled = true></td>
+                            <td>岗位</td>
+                            <td><input class = "form-control" type="text" id = "position" disabled = true></td>
+                        </tr>
+                        <!--                其他信息-->
+                        <tr>
+                            <td id = "tableHead" colspan = "5">
+                                <h4>其他信息</h4>
+                            </td>
+                            <!--                    <td>11</td>-->
+                        </tr>
+                        <tr>
+                            <td>毕业学校</td>
+                            <td><input class = "form-control"type="text" id = "school" disabled = true></td>
+                            <td>家庭住址</td>
+                            <td colspan = "2">
+                                <div class = "layui-row">
+                                    <div class = "layui-col-md4">
+                                        <select name="s_province" id="s_province" class="inpt san form-control" disabled="true"></select>
+                                    </div>
+                                    <div class = "layui-col-md8">
+                                        <select name="s_city" id="s_city" class="inpt san form-control" disabled="true">
+                                            <option>地级市</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                            <!--                                        <td>11111</td>-->
+                        </tr>
+                        <tr>
+                            <td>最高学历</td>
+                            <td>
+                                <select class="selectpicker form-control" id = "eduBack" disabled="true">
+                                    <option>高中</option>
+                                    <option>本科</option>
+                                    <option>硕士</option>
+                                    <option>博士</option>
+                                </select>
+                            </td>
+                            <td>籍贯</td>
+                            <td colspan = "2">
+                                <div class = "layui-row">
+                                    <div class = "layui-col-md4">
+                                        <select name="s_province" id="s_province1" class="inpt san form-control" disabled="true"></select>
+                                    </div>
+                                    <div class = "layui-col-md8">
+                                        <select name="s_city" id="s_city1" class="inpt san form-control" disabled="true">
+                                            <option>地级市</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>政治面貌</td>
+                            <td>
+                                <label  class="btn " id = "politicsBack">
+                                    <input  type="radio" name="options" value = "群众" disabled = true> 群众
+                                </label>
+                                <label  class="btn ">
+                                    <input  type="radio" name="options" value = "共青团员" disabled = true> 共青团员
+                                </label>
+                                <label  class="btn ">
+                                    <input  type="radio" name="options" value = "党员" disabled = true> 党员
+                                </label>
+                            </td>
+                            <td>入职日期</td>
+                            <td colspan = "2">
+                                <!--                        <input class = "form-control" data-provide="datepicker">-->
+                                <div class = "layui-row">
+                                    <div class="layui-inline layui-col-md12">
+                                        <div class="layui-input-inline">
+                                            <input type="text" class="layui-input form-control" id="entryTime" placeholder="yyyy-MM-dd" disabled = true>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan = "5" id = "conf">
+                                <div class="layui-col-lg2 layui-col-lg-offset2">
+                                    <button type="button" class="layui-btn layui-btn-warm" style="height: 40px;" id = "archivesChange">修改</button>
+                                </div>
+                                <!--                保存-->
+                                <div class="layui-col-lg2 layui-col-lg-offset2">
+                                    <button type="button" class="layui-btn layui-btn-normal" style="height: 40px;" id = "archivesSave" data-toggle="modal" data-target="#modalSave">保存</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+    </div>
+</div>
+
+
+
+<!--添加模态框-->
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加</h4>
+            </div>
+            <div class="modal-body" id = "modalAddName">
+                <input type="text" placeholder="输入名称" id = "addInput" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default closeModal" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary"  id = "modalAddconfirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--确认删除模态框-->
+<div class="modal fade" id="modalDel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">确认删除</h4>
+            </div>
+            <div class="modal-body" id = "modalBody">
+<!--                <p></p>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default closeModal" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary"  id = "confirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--保存成功提示框-->
+<div class="modal fade" id="modalSave">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">确认删除</h4>
+            </div>
+            <div class="modal-body">
+                <p>是否保存？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" class = "closeModal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id = "saveConfirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="ztree/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="ztree/js/jquery.ztree.exedit.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src = "layui-v2.5.4/layui/layui.js"></script>
+    <script src = "js/voro-city.js"></script>
+    <script src = "js/index.js"></script>
+</body>
+</html>

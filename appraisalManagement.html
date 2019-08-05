@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考评管理界面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="layui-v2.5.4/layui/css/layui.css">
+    <link rel="stylesheet" href="ztree/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="ztree/css/metroStyle/metroStyle.css" type="text/css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<style>
+    /* 表格CSS*/
+    .item{
+        font-size: 20px;
+        background-color: rgba(47,64,86,0.1);
+    }
+    .title{
+        font-size: 25px;
+        text-align: center;
+    }
+    .item{
+        height: 150px;
+    }
+    .item-td{
+        width: 100px;
+        height: 30px;
+    }
+    th{
+        font-size: 20px;
+        text-align: center;
+        font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+    }
+    .sum{
+        text-align: center;
+        font-size: 20px;
+        background-color: #9F9F9F;
+        border: 0;
+
+    }
+    table{
+        text-align: center;
+        margin-top: 35px;
+    }
+    /*input表单样式和颜色*/
+    input{
+        border: none;
+        text-align:center;
+    }
+    .content{
+        background-color: transparent;
+    }
+    .remark{
+        background-color: #9F9F9F;
+    }
+    .sumRemark{
+        background-color: rgb(126,167,200);
+    }
+</style>
+<body>
+<div class="layui-container">
+    <!--搜索、编辑、完成、折叠界面、显示、勾选-->
+    <div class="layui-row">
+        <!--导航-->
+        <div class="layui-row">
+            <div class="layui-col-lg12">
+                <nav class="navbar navbar-inverse" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#example-navbar-collapse" aria-expanded="false">
+                                <span class="sr-only">切换导航</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a href="#" class="navbar-brand">
+                                <img src="imgs/logo.jpg" alt="中国电信图标" style="width:45px;height:45px;position: relative;top: -10px" >
+                            </a>
+                        </div>
+                        <div class="navbar-container">
+                            <ul class="nav navbar-nav">
+                                <li><a href="archivesManagement.html" style="font-size: 18px;">档案管理</a></li>
+                                <li><a href="wageManagement_theImportInterface.html" style="font-size: 18px;">工资管理</a></li>
+                                <li class="dropdown active">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="font-size: 18px;">
+                                        考评管理 <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <ol><a href="appraisalManagement.html">考评管理</a></ol>
+                                        <ol><a href="appraisalChart.html">月考评图</a></ol>
+                                        <ol><a href="">季度考评图</a></ol>
+                                        <ol class="divider"></ol>
+                                        <ol><a href="#">半年考评图</a></ol>
+                                        <ol><a href="#">一年考评图</a></ol>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <div id="navbar" class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li><a href="#"><img src="imgs/个人设置.png"alt="个人设置"></a></li>
+                                    <li><a href="#" style="font-size: 18px;">英文</a></li>
+                                </ul>
+                                <form class="navbar-form navbar-right">
+                                    <input type="text" class="form-control" placeholder="Search...">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row" id="mainContainer">
+<!--        搜索 折叠-->
+        <div class="layui-col-md3" id = "leftTreeNav">
+            <div class="layui-row grid-demo">
+                <div class="leftSection">
+                    <!--功能键-->
+                    <div class="anotherSearch layui-row">
+                        <!--搜索-->
+                        <input type="text" class="form-control layui-col-md8" placeholder="Search...">
+                        <!--完成-->
+                        <div class = "animal layui-col-md2 layui-col-md-offset2">
+                            <ul class="site-doc-icon site-doc-anim">
+                                <img class="layui-anim" data-anim="layui-anim-scaleSpring" src="imgs/confirm.png" alt="">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--滚动条-->
+                    <div class="leftNavbar">
+                        <div class="panel-group layui-col-space5" id="accordion">
+                            <div class="content_wrap">
+                                <div class="zTreeDemoBackground left">
+                                    <ul id="treeDemo" class="ztree"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--选择导入属性-->
+            </div>
+        </div>
+
+        <!--button和table-->
+        <div class="layui-col-md7 layui-col-md-offset1" >
+            <div class="layui-row layui-col-space10">
+<!--                日期表-->
+                <div class="layui-col-md6">
+                    <label class="layui-form-label" for="test3">日期</label>
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" id="test3" placeholder="yyyy-MM">
+                    </div>
+                </div>
+<!--                趋势-->
+                <div class="layui-col-md2">
+                    <button type="button" class="layui-btn" id="tendency">趋势</button>
+                </div>
+<!--                修改-->
+                <div class="layui-col-md2">
+                    <button type="button" class="layui-btn layui-btn-normal" id="alter">修改</button>
+                </div>
+<!--                保存-->
+                <div class="layui-col-md2">
+                    <button type="button" class="layui-btn layui-btn-warm" id="save">保存</button>
+
+                </div>
+            </div>
+
+
+                    <div class="layui-row">
+                        <!--                table表-->
+                        <div id="test" class="leftNavbar" style="overflow-y: scroll;overflow-x: scroll;height: 600px;" >
+                            <table id="resourceTable"  class="table table-hover table-condensed" contenteditable="false" >
+                                <thead>
+                                <tr >
+                                    <th colspan="2" rowspan="2" class="title" style="background-color: rgba(57,67,73,0.2)">考核项目</th>
+                                    <th colspan="4" class="title" style="background-color:rgb(0,150,136)">考核得分</th>
+                                </tr>
+                                <tr style="background-color:rgba(118,28,25,0.6)">
+                                    <th>直接领导考核</th>
+                                    <th>分管领导考核</th>
+                                    <th>权重</th>
+                                    <th>备注</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <!--                                1、品德修养、礼貌礼仪、个人仪容仪表
+                                    团队合作意识、能以集体利益为重
+                                    通能力和亲和力
+                                    习和总结能力-->
+                                    <td rowspan="5" class="item" id="template">个人素质</td>
+                                    <td class = "item-td">1、品</td>
+                                    <td class = "item-td"><input type="text" id="11z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="11j" class="content" /></td>
+                                    <td class = "item-td">20%</td>
+                                    <td class = "item-td"><input type="text" id="11bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">2、有</td>
+                                    <td class = "item-td"><input type="text" id="12z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="12j" class="content"/></td>
+                                    <td class = "item-td">30%</td>
+                                    <td class = "item-td"><input type="text" id="12bei" class="content" /></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">3、沟</td>
+                                    <td class = "item-td"><input type="text" id="13z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="13j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="13bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">4、学</td>
+                                    <td class = "item-td"><input type="text" id="14z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="14j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="14bei" class="content"/></td>
+                                </tr>
+                                <tr class="sum">
+                                    <td class = "item-td">合计</td>
+                                    <td class = "item-td"><input type="text" id="15z" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td"><input type="text" id="15j" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td">100%</td>
+                                    <td class = "item-td"><input type="text" id="15bei" class="remark" disabled="disabled"/></td>
+                                </tr>
+                                <tr>
+                                    <!--                                勤情况
+                                    待工作责任心
+                                    待工作热情度
+                                    主动完成工作任务
+                                    -->
+                                    <td rowspan="5" class="item">工作态度</td>
+                                    <td class = "item-td">1、出</td>
+                                    <td class = "item-td"><input type="text" id="21z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="21j" class="content"/></td>
+                                    <td class = "item-td">20%</td>
+                                    <td class = "item-td"><input type="text" id="21bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">2、对</td>
+                                    <td class = "item-td"><input type="text" id="22z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="22j" class="content"/></td>
+                                    <td class = "item-td">30%</td>
+                                    <td class = "item-td"><input type="text" id="22bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">3、对</td>
+                                    <td class = "item-td"><input type="text" id="23z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="23j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="23bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">4、能</td>
+                                    <td class = "item-td"><input type="text" id="24z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="24j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="24bei" class="content"/></td>
+                                </tr>
+                                <tr class="sum">
+                                    <td class = "item-td">合计</td>
+                                    <td class = "item-td"><input type="text" id="25z" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td"><input type="text" id="25j" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td">100%</td>
+                                    <td class = "item-td"><input type="text" id="25bei" class="remark" disabled="disabled"/></td>
+                                </tr>
+                                <tr>
+                                    <!--                                业业务知识
+                                    关专业知识
+                                    加各种专业知识培训
+                                    断学习专业知识的技能
+                                    -->
+                                    <td rowspan="5" class="item">专业知识</td>
+                                    <td class = "item-td">1、专</td>
+                                    <td class = "item-td"><input type="text" id="31z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="31j" class="content"/></td>
+                                    <td class = "item-td">20%</td>
+                                    <td class = "item-td"><input type="text" id="31bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">2、相</td>
+                                    <td class = "item-td"><input type="text" id="32z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="32j" class="content"/></td>
+                                    <td class = "item-td">30%</td>
+                                    <td class = "item-td"><input type="text" id="32bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">3、参</td>
+                                    <td class = "item-td"><input type="text" id="33z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="33j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="33bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">4、不</td>
+                                    <td class = "item-td"><input type="text" id="34z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="34j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="34bei" class="content"/></td>
+                                </tr>
+                                <tr class="sum">
+                                    <td class = "item-td">合计</td>
+                                    <td class = "item-td"><input type="text" id="35z" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td"><input type="text" id="35j" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td">100%</td>
+                                    <td class = "item-td"><input type="text" id="35bei" class="remark" disabled="disabled"/></td>
+                                </tr>
+                                <tr>
+                                    <!--                               保证保量完成工作任务
+                                     正确理解工作，主动调动各方面资源以达成目标
+                                     作认真、细致，考虑问题深入
+                                     问题认识全面，有系统性-->
+                                    <td rowspan="5" class="item">工作能力</td>
+                                    <td class = "item-td">1、能</td>
+                                    <td class = "item-td"><input type="text" id="41z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="41j" class="content"/></td>
+                                    <td class = "item-td">20%</td>
+                                    <td class = "item-td"><input type="text" id="41bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">2、能  </td>
+                                    <td class = "item-td"><input type="text" id="42z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="42j" class="content"/></td>
+                                    <td class = "item-td">30%</td>
+                                    <td class = "item-td"><input type="text" id="42bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">3、工</td>
+                                    <td class = "item-td"><input type="text" id="43z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="43j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="43bei" class="content"/></td>
+                                </tr>
+                                <tr>
+                                    <td class = "item-td">4、 对</td>
+                                    <td class = "item-td"><input type="text" id="44z" class="content"/></td>
+                                    <td class = "item-td"><input type="text" id="44j" class="content"/></td>
+                                    <td class = "item-td">25%</td>
+                                    <td class = "item-td"><input type="text" id="44bei" class="content"/></td>
+                                </tr>
+                                <tr class="sum">
+                                    <td class = "item-td">合计</td>
+                                    <td class = "item-td"><input type="text" id="45z" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td"><input type="text" id="45j" class="remark" disabled="disabled"/></td>
+                                    <td class = "item-td">100%</td>
+                                    <td class = "item-td"><input type="text" id="45bei" class="remark" disabled="disabled"/></td>
+                                </tr>
+                                <tr style="font-size: 20px;background-color:rgba(40,109,164,0.6)">
+                                    <td rowspan="2" colspan="2" class = "item-td">统计</td>
+                                    <td rowspan="2" class = "item-td"><input type="text" id="5z" class="sumRemark" disabled="disabled"/></td>
+                                    <td rowspan="2" class = "item-td"><input type="text" id="5j" class="sumRemark" disabled="disabled"/></td>
+                                    <td rowspan="2" class = "item-td"></td>
+                                    <td rowspan="2" class = "item-td"><input type="text" id="5bei" class="sumRemark" disabled="disabled"/></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+        </div>
+    </div>
+</div>
+<!--添加模态框-->
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加</h4>
+            </div>
+            <div class="modal-body" id = "modalAddName">
+                <input type="text" placeholder="输入名称" id = "addInput" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" class = "closeModal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id = "modalAddconfirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--确认删除模态框-->
+<div class="modal fade" id="modalDel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">确认删除</h4>
+            </div>
+            <div class="modal-body" id = "modalBody">
+                <!--                <p></p>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" class = "closeModal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id = "confirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="layui-v2.5.4/layui/layui.js"></script>
+<script type="text/javascript" src="ztree/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="ztree/js/jquery.ztree.exedit.js"></script>
+<!--<script src="js/index.js"></script>-->
+<script src="js/addTable.js"></script>
+
+<script>
+    $('.content').attr("disabled",true);
+</script>
+
+<script>
+    //form表单样式
+    layui.use(['layer', 'form'], function(){
+        var layer = layui.layer
+            ,form = layui.form;
+        // layer.open({
+        //    type:1,
+        //    content:$('#test'),
+        //     anim:5,
+        //     maxmin:true
+        // });
+    });
+
+    //动画样式
+    layui.use('jquery', function(){
+        var $ = layui.$;
+
+        //演示动画
+        $('.site-doc-icon .layui-anim').on('click', function(){
+            var othis = $(this), anim = othis.data('anim');
+
+            //停止循环
+            if(othis.hasClass('layui-anim-loop')){
+                return othis.removeClass(anim);
+            }
+
+            othis.removeClass(anim);
+
+            setTimeout(function(){
+                othis.addClass(anim);
+            });
+            //恢复渐隐
+            if(anim === 'layui-anim-fadeout'){
+                setTimeout(function(){
+                    othis.removeClass(anim);
+                }, 1300);
+            }
+        });
+    });
+</script>
+</body>
+</html>

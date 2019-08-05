@@ -1,0 +1,68 @@
+.loginContainer{
+    width: 300px;
+    height: 450px;
+    background-color: rgba(255,255,255,0.6);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+.loginMain{
+    width: 280px;
+    height: 350px;
+    /*border: 1px solid #A9A9A9;*/
+    text-align: center;
+    margin-top: 30px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.loginUserName{
+    margin: 20px 0 10px 0;
+}
+.loginUserText{
+
+}
+/*登录框标题以下主体部分*/
+.login .main{
+    width: 280px;
+    height: 350px;
+    border: 1px solid #A9A9A9;
+    left: 50%;
+    position: absolute;
+    /*position: relative;*/
+    transform: translateX(-50%);
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+/*输入用户名和密码*/
+.user,.passwordText {
+    border-bottom: 1px solid #A9A9A9;
+    margin-top: 10px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+.beforeEye{
+    display: inline-block;
+    margin-left: 18px;
+}
+/*用户名输入框和密码输入框*/
+.imputText input{
+    background-color: transparent;
+    border: none;
+    height: 35px;
+    margin-left: 15px;
+    outline:none;
+}
+/*忘记用户名？,忘记密码？,需要帮助？*/
+.needPrompt{
+    font-size: 16px;
+    margin-top: 10px;
+}
+.btn-group-lg>.btn, .btn-lg{
+    width: 250px;
+}
+.loginButton{
+    margin: 70px 0 10px 0;
+}

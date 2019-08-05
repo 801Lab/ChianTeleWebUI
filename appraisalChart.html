@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>考评管理界面——图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="layui-v2.5.4/layui/css/layui.css">
+    <link rel="stylesheet" href="ztree/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="ztree/css/metroStyle/metroStyle.css" type="text/css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="layui-v2.5.4/layui/layui.js"></script>
+    <script src="echarts/dist/echarts.min.js"></script>
+    <script src="js/addTable.js"></script>
+</head>
+<style>
+    .glyphicon-picture{
+        font-size: 500px;
+    }
+</style>
+<body>
+<div class="layui-container">
+    <!--搜索、编辑、完成、折叠界面-->
+    <!--导航-->
+    <div class="layui-row">
+        <div class="layui-col-lg12">
+            <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#example-navbar-collapse" aria-expanded="false">
+                            <span class="sr-only">切换导航</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a href="#" class="navbar-brand">
+                            <img src="imgs/logo.jpg" alt="中国电信图标" style="width:45px;height:45px;position: relative;top: -10px" >
+                        </a>
+                    </div>
+                    <div class="navbar-container">
+                        <ul class="nav navbar-nav">
+                            <li><a href="archivesManagement.html" style="font-size: 18px;">档案管理</a></li>
+                            <li><a href="wageManagement_theImportInterface.html" style="font-size: 18px;">工资管理</a></li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="font-size: 18px;">
+                                    考评管理 <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <ol><a href="appraisalManagement.html">考评管理</a></ol>
+                                    <ol><a href="appraisalChart.html">月考评图</a></ol>
+                                    <ol><a href="">季度考评图</a></ol>
+                                    <ol class="divider"></ol>
+                                    <ol><a href="#">半年考评图</a></ol>
+                                    <ol><a href="#">一年考评图</a></ol>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="#"><img src="imgs/个人设置.png"alt="个人设置"></a></li>
+                                <li><a href="#" style="font-size: 18px;">英文</a></li>
+                            </ul>
+                            <form class="navbar-form navbar-right">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="layui-row" id = "mainContainer">
+        <!--搜索、编辑、完成、折叠界面-->
+        <!--搜索、编辑、完成、折叠-->
+        <div class="layui-col-md3" id = "leftTreeNav">
+            <div class="layui-row grid-demo">
+                <div class="leftSection">
+                    <!--功能键-->
+                    <div class="anotherSearch layui-row">
+                        <!--搜索-->
+                        <input type="text" class="form-control layui-col-md8" placeholder="Search...">
+                        <!--完成-->
+                        <div class = "animal layui-col-md2 layui-col-md-offset2">
+                            <ul class="site-doc-icon site-doc-anim">
+                                <img class="layui-anim" data-anim="layui-anim-scaleSpring" src="imgs/confirm.png" alt="">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--滚动条-->
+                    <div class="leftNavbar">
+                        <div class="panel-group layui-col-space5" id="accordion">
+                            <div class="content_wrap">
+                                <div class="zTreeDemoBackground left">
+                                    <ul id="treeDemo" class="ztree"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--选择导入属性-->
+            </div>
+        </div>
+
+        <!--button和table-->
+        <div class="layui-col-md7 layui-col-md-offset1">
+            <div class="layui-row layui-col-space10">
+                <!--                日期表-->
+                <div class="layui-col-lg6">
+                    <label class="layui-form-label" for="test1">日期</label>
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" id="test1" placeholder="yyyy-MM">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+<!--                插入图表-->
+                <div id="main" style="width: 750px;height:600px; margin-top: 20px;"><span class="glyphicon glyphicon-picture" style="margin-left: 100px"></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加模态框-->
+<div class="modal fade" id="modalAdd">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加</h4>
+            </div>
+            <div class="modal-body" id = "modalAddName">
+                <input type="text" placeholder="输入名称" id = "addInput" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" class = "closeModal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id = "modalAddconfirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--确认删除模态框-->
+<div class="modal fade" id="modalDel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">确认删除</h4>
+            </div>
+            <div class="modal-body" id = "modalBody">
+                <!--                <p></p>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" class = "closeModal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id = "confirm">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="ztree/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="ztree/js/jquery.ztree.exedit.js"></script>
+
+
+<script>
+    //动画样式
+    layui.use('jquery', function(){
+        var $ = layui.$;
+
+        //演示动画
+        $('.site-doc-icon .layui-anim').on('click', function(){
+            var othis = $(this), anim = othis.data('anim');
+
+            //停止循环
+            if(othis.hasClass('layui-anim-loop')){
+                return othis.removeClass(anim);
+            }
+
+            othis.removeClass(anim);
+
+            setTimeout(function(){
+                othis.addClass(anim);
+            });
+            //恢复渐隐
+            if(anim === 'layui-anim-fadeout'){
+                setTimeout(function(){
+                    othis.removeClass(anim);
+                }, 1300);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
