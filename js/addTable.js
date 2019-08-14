@@ -4,49 +4,53 @@ $(function () {
 
     //定义全局结点,结点在JSON中的下标
     var treeNodeInfo,index;
-    //根据键获取值
-    var temp = localStorage.getItem('table');
-    //变为JSON
-    var tempJson = JSON.parse(temp);
+    var ztreeJson,appraisalJson;
     //通过回调函数获取日期（年、月）
-    var year,month;
+    var year,month,tableYear="",tableMonth="",tableID=1;
+    var flag1=0;
 
-    //标记JSON数组中的下标
-    var m = 0;
 
-    var curMenu = null, zTree_Menu = null;
-    var setting = {
-        view: {
-            showIcon: false,
-            showLine: false,
-            selectedMulti: false,
-            dblClickExpand: false,
-            addHoverDom: addHoverDom,   //增加
-            removeHoverDom: removeHoverDom, //删除
-            dblClickExpand: false,
-        },
-        data: {
-            simpleData: {
-                enable: true
-            }
-        },
-        edit: {
-            enable: true,
-            showRemoveBtn: true,
-            // showRemoveBtn: setRemoveBtn,         //设置结点删除按钮
-        },
-        callback: {
-            beforeClick: beforeClick,
-            beforeRemove: beforeRemove,
-            onClick: ztreeOnclick
-            // beforeRename: beforeRename
-        }
-    };
-
-    var zNodes = JSON.parse(localStorage.getItem('table') || '[]');         /*从localStorage获取数据*/
-    $(document).ready(function(){
-        $.fn.zTree.init($("#treeDemo"), setting, zNodes);  //初始化
+    $.get("./conn.php",function (data,status) {
+          //data为object
+          ztreeJson = data;
+          darwZtree();
     });
+
+    function darwZtree() {
+        var curMenu = null, zTree_Menu = null;
+        var setting = {
+            view: {
+                showIcon: false,
+                showLine: false,
+                selectedMulti: false,
+                dblClickExpand: false,
+                addHoverDom: addHoverDom,   //增加
+                removeHoverDom: removeHoverDom, //删除
+                dblClickExpand: false,
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: true,
+                // showRemoveBtn: setRemoveBtn,         //设置结点删除按钮
+            },
+            callback: {
+                beforeClick: beforeClick,
+                beforeRemove: beforeRemove,
+                onClick: ztreeOnclick
+                // beforeRename: beforeRename
+            }
+        };
+        var zNodes = ztreeJson;         /*从ztreeJson获取数据*/
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting, zNodes);  //初始化
+        });
+    }
+
 
     // 添加新结点
     var newCount = 1;
@@ -104,197 +108,200 @@ $(function () {
         return false;
     }
 
-    layui.use('laydate', function(){
-        var laydate = layui.laydate;
-        //执行一个laydate实例
-        laydate.render({
-            elem: '#test3' //指定元素
-            ,type: 'month'
-            ,event:'focus'
-            ,done:function (value,date) { //控件选择完毕的回调
-                year = JSON.stringify(date.year); //获取年
-                month = JSON.stringify(date.month); //获取月
-                // 判断结点
-                 if(treeNodeInfo!=null&&treeNodeInfo.level==2){
-                     //判断年月
-                     //  console.log(tempJson[index]["趋势表"]["日期"][0]["月"]);
-                     //   console.log(tempJson[index]["趋势表"]["日期"][1]["月"]);
-                     if(treeNodeInfo.hasOwnProperty("index")){
-                         for(var i=0;i<tempJson[index]["趋势表"]["日期"].length;i++){
-                             if(year==tempJson[index]["趋势表"]["日期"][i]["年"]&&
-                                     month==tempJson[index]["趋势表"]["日期"][i]["月"]){
-                                     //更新表单信息
-                                 m = i ;
-                                 $("#11z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].直接领导考核);
-                                 $("#11j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].分管领导考核);
-                                 $("#11bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].备注);
-                                 $("#12z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].直接领导考核);
-                                 $("#12j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].分管领导考核);
-                                 $("#12bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].备注);
-                                 $("#13z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].直接领导考核);
-                                 $("#13j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].分管领导考核);
-                                 $("#13bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].备注);
-                                 $("#14z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].直接领导考核);
-                                 $("#14j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].分管领导考核);
-                                 $("#14bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].备注);
-                                 $("#15z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].直接领导考核);
-                                 $("#15j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].分管领导考核);
-                                 $("#15bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].备注);
-
-                                 $("#21z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].直接领导考核);
-                                 $("#21j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].分管领导考核);
-                                 $("#21bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].备注);
-                                 $("#22z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].直接领导考核);
-                                 $("#22j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].分管领导考核);
-                                 $("#22bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].备注);
-                                 $("#23z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].直接领导考核);
-                                 $("#23j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].分管领导考核);
-                                 $("#23bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].备注);
-                                 $("#24z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].直接领导考核);
-                                 $("#24j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].分管领导考核);
-                                 $("#24bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].备注);
-                                 $("#25z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].直接领导考核);
-                                 $("#25j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].分管领导考核);
-                                 $("#25bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].备注);
-
-                                 $("#31z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].直接领导考核);
-                                 $("#31j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].分管领导考核);
-                                 $("#31bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].备注);
-                                 $("#32z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].直接领导考核);
-                                 $("#32j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].分管领导考核);
-                                 $("#32bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].备注);
-                                 $("#33z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].直接领导考核);
-                                 $("#33j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].分管领导考核);
-                                 $("#33bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].备注);
-                                 $("#34z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].直接领导考核);
-                                 $("#34j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].分管领导考核);
-                                 $("#34bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].备注);
-                                 $("#35z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].直接领导考核);
-                                 $("#35j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].分管领导考核);
-                                 $("#35bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].备注);
-
-                                 $("#41z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].直接领导考核);
-                                 $("#41j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].分管领导考核);
-                                 $("#41bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].备注);
-                                 $("#42z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].直接领导考核);
-                                 $("#42j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].分管领导考核);
-                                 $("#42bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].备注);
-                                 $("#43z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].直接领导考核);
-                                 $("#43j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].分管领导考核);
-                                 $("#43bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].备注);
-                                 $("#44z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].直接领导考核);
-                                 $("#44j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].分管领导考核);
-                                 $("#44bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].备注);
-                                 $("#45z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].直接领导考核);
-                                 $("#45j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].分管领导考核);
-                                 $("#45bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].备注);
-
-                                 $("#5z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].直接领导考核);
-                                 $("#5j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].分管领导考核);
-                                 $("#5bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].备注);
-                                     return;
-                             }
-                         }
-                         //year和month在数组中没有找到
-                         alert(year+'年'+month+'月'+"还没有考评表！");
-                         $('input').val("");//置空
-                     }  //没有index
-                     else{
-                         // alert("还没有index！");
-                         $('input').val("");//置空
-                     }
-                 }
-
-                 else{
-                     $('input').val("");//置空
-                 }
-            }
-        });
+    $.get("./conn2.php",function (data,status) {
+        //data为object
+        appraisalJson = data;
+        drawData();
     });
+
+    function drawData(){
+        //点击日期查询数据库信息
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#test3' //指定元素
+                ,type: 'month'
+                ,event:'focus'
+                ,done:function (value,date) { //控件选择完毕的回调
+                    year = JSON.stringify(date.year); //获取年
+                    month = JSON.stringify(date.month); //获取月
+                    // 判断结点
+                    if (treeNodeInfo != null && treeNodeInfo.level == 2) {
+                        for (var i = 0; i < appraisalJson.length; i++) {
+                             tableYear = appraisalJson[i].yearMonth.split('.')[0];
+                             tableMonth = appraisalJson[i].yearMonth.split('.')[1];
+                             tableID = appraisalJson[i].id;
+                            if (year == tableYear && month == tableMonth && treeNodeInfo.id == tableID) {
+                                //更新表单信息
+                                index = i;
+                                $("#11z").val(appraisalJson[i].value111);
+                                $("#11j").val(appraisalJson[i].value112);
+                                $("#11bei").val(appraisalJson[i].value113);
+                                $("#12z").val(appraisalJson[i].value121);
+                                $("#12j").val(appraisalJson[i].value122);
+                                $("#12bei").val(appraisalJson[i].value123);
+                                $("#13z").val(appraisalJson[i].value131);
+                                $("#13j").val(appraisalJson[i].value132);
+                                $("#13bei").val(appraisalJson[i].value133);
+                                $("#14z").val(appraisalJson[i].value141);
+                                $("#14j").val(appraisalJson[i].value142);
+                                $("#14bei").val(appraisalJson[i].value143);
+                                $("#15z").val(appraisalJson[i].value151);
+                                $("#15j").val(appraisalJson[i].value152);
+                                $("#15bei").val(appraisalJson[i].value153);
+
+                                $("#21z").val(appraisalJson[i].value211);
+                                $("#21j").val(appraisalJson[i].value212);
+                                $("#21bei").val(appraisalJson[i].value213);
+                                $("#22z").val(appraisalJson[i].value221);
+                                $("#22j").val(appraisalJson[i].value222);
+                                $("#22bei").val(appraisalJson[i].value223);
+                                $("#23z").val(appraisalJson[i].value231);
+                                $("#23j").val(appraisalJson[i].value232);
+                                $("#23bei").val(appraisalJson[i].value233);
+                                $("#24z").val(appraisalJson[i].value241);
+                                $("#24j").val(appraisalJson[i].value242);
+                                $("#24bei").val(appraisalJson[i].value243);
+                                $("#25z").val(appraisalJson[i].value251);
+                                $("#25j").val(appraisalJson[i].value252);
+                                $("#25bei").val(appraisalJson[i].value253);
+
+                                $("#31z").val(appraisalJson[i].value311);
+                                $("#31j").val(appraisalJson[i].value312);
+                                $("#31bei").val(appraisalJson[i].value313);
+                                $("#32z").val(appraisalJson[i].value321);
+                                $("#32j").val(appraisalJson[i].value322);
+                                $("#32bei").val(appraisalJson[i].value323);
+                                $("#33z").val(appraisalJson[i].value331);
+                                $("#33j").val(appraisalJson[i].value332);
+                                $("#33bei").val(appraisalJson[i].value333);
+                                $("#34z").val(appraisalJson[i].value341);
+                                $("#34j").val(appraisalJson[i].value342);
+                                $("#34bei").val(appraisalJson[i].value343);
+                                $("#35z").val(appraisalJson[i].value351);
+                                $("#35j").val(appraisalJson[i].value352);
+                                $("#35bei").val(appraisalJson[i].value353);
+
+                                $("#41z").val(appraisalJson[i].value411);
+                                $("#41j").val(appraisalJson[i].value412);
+                                $("#41bei").val(appraisalJson[i].value413);
+                                $("#42z").val(appraisalJson[i].value421);
+                                $("#42j").val(appraisalJson[i].value422);
+                                $("#42bei").val(appraisalJson[i].value423);
+                                $("#43z").val(appraisalJson[i].value431);
+                                $("#43j").val(appraisalJson[i].value432);
+                                $("#43bei").val(appraisalJson[i].value433);
+                                $("#44z").val(appraisalJson[i].value441);
+                                $("#44j").val(appraisalJson[i].value442);
+                                $("#44bei").val(appraisalJson[i].value443);
+                                $("#45z").val(appraisalJson[i].value451);
+                                $("#45j").val(appraisalJson[i].value452);
+                                $("#45bei").val(appraisalJson[i].value453);
+
+                                $("#5z").val(appraisalJson[i].value51);
+                                $("#5j").val(appraisalJson[i].value52);
+                                $("#5bei").val(appraisalJson[i].value53);
+                                return;
+                                }else {
+                                    continue;
+                                }
+                            }
+                            //year和month在数组中没有找到
+                             alert(year+'年'+month+'月'+"还没有考评表！");
+                             $('input').val("");//置空
+                             return;
+                        }else{
+                        $('input').val("");//置空
+                        return;
+                    }
+                }
+            });
+        });
+}
+
 
     //点击人员后将趋势表信息渲染到右边表格中
     function ztreeOnclick(event,treeId, treeNode){
         treeNodeInfo = treeNode;
-        index = treeNodeInfo.index;  //点击结点获取结点在JSON数组中的下表
-        // console.log(year+month);
         if(year!=null&&month!=null){
-            $('.layui-input #test3').attr("placeholder",year+'-'+month);
-            if(treeNode.level == 2&&treeNode.hasOwnProperty("趋势表")){
-                //判断日期(测试日期，2019年12月)
-                for(var i=0;i<tempJson[index]["趋势表"]["日期"].length;i++){
-                    if(year==treeNode.趋势表["日期"][i]["年"]&&
-                        month==treeNode.趋势表["日期"][i]["月"]){
-                        //table表填内容
-                        m = i;
-                        $("#11z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].直接领导考核);
-                        $("#11j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].分管领导考核);
-                        $("#11bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["1"].备注);
-                        $("#12z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].直接领导考核);
-                        $("#12j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].分管领导考核);
-                        $("#12bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["2"].备注);
-                        $("#13z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].直接领导考核);
-                        $("#13j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].分管领导考核);
-                        $("#13bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["3"].备注);
-                        $("#14z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].直接领导考核);
-                        $("#14j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].分管领导考核);
-                        $("#14bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["4"].备注);
-                        $("#15z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].直接领导考核);
-                        $("#15j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].分管领导考核);
-                        $("#15bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["个人素质"]["合计"].备注);
+            $('#test3.layui-input').attr("placeholder",year+'-'+month);
+            if(treeNode.level == 2&&treeNode!=null){
+                //判断日期
+                for(var i=0;i<appraisalJson.length;i++){
+                     tableYear = appraisalJson[i].yearMonth.split('.')[0];
+                     tableMonth = appraisalJson[i].yearMonth.split('.')[1];
+                     tableID = appraisalJson[i].id;
+                    if(year==tableYear&&month==tableMonth&&treeNode.id==tableID){
+                        //更新表单信息
+                        index = i;
+                        $("#11z").val(appraisalJson[i].value111);
+                        $("#11j").val(appraisalJson[i].value112);
+                        $("#11bei").val(appraisalJson[i].value113);
+                        $("#12z").val(appraisalJson[i].value121);
+                        $("#12j").val(appraisalJson[i].value122);
+                        $("#12bei").val(appraisalJson[i].value123);
+                        $("#13z").val(appraisalJson[i].value131);
+                        $("#13j").val(appraisalJson[i].value132);
+                        $("#13bei").val(appraisalJson[i].value133);
+                        $("#14z").val(appraisalJson[i].value141);
+                        $("#14j").val(appraisalJson[i].value142);
+                        $("#14bei").val(appraisalJson[i].value143);
+                        $("#15z").val(appraisalJson[i].value151);
+                        $("#15j").val(appraisalJson[i].value152);
+                        $("#15bei").val(appraisalJson[i].value153);
 
-                        $("#21z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].直接领导考核);
-                        $("#21j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].分管领导考核);
-                        $("#21bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["1"].备注);
-                        $("#22z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].直接领导考核);
-                        $("#22j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].分管领导考核);
-                        $("#22bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["2"].备注);
-                        $("#23z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].直接领导考核);
-                        $("#23j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].分管领导考核);
-                        $("#23bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["3"].备注);
-                        $("#24z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].直接领导考核);
-                        $("#24j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].分管领导考核);
-                        $("#24bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["4"].备注);
-                        $("#25z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].直接领导考核);
-                        $("#25j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].分管领导考核);
-                        $("#25bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作态度"]["合计"].备注);
+                        $("#21z").val(appraisalJson[i].value211);
+                        $("#21j").val(appraisalJson[i].value212);
+                        $("#21bei").val(appraisalJson[i].value213);
+                        $("#22z").val(appraisalJson[i].value221);
+                        $("#22j").val(appraisalJson[i].value222);
+                        $("#22bei").val(appraisalJson[i].value223);
+                        $("#23z").val(appraisalJson[i].value231);
+                        $("#23j").val(appraisalJson[i].value232);
+                        $("#23bei").val(appraisalJson[i].value233);
+                        $("#24z").val(appraisalJson[i].value241);
+                        $("#24j").val(appraisalJson[i].value242);
+                        $("#24bei").val(appraisalJson[i].value243);
+                        $("#25z").val(appraisalJson[i].value251);
+                        $("#25j").val(appraisalJson[i].value252);
+                        $("#25bei").val(appraisalJson[i].value253);
 
-                        $("#31z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].直接领导考核);
-                        $("#31j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].分管领导考核);
-                        $("#31bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["1"].备注);
-                        $("#32z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].直接领导考核);
-                        $("#32j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].分管领导考核);
-                        $("#32bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["2"].备注);
-                        $("#33z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].直接领导考核);
-                        $("#33j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].分管领导考核);
-                        $("#33bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["3"].备注);
-                        $("#34z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].直接领导考核);
-                        $("#34j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].分管领导考核);
-                        $("#34bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["4"].备注);
-                        $("#35z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].直接领导考核);
-                        $("#35j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].分管领导考核);
-                        $("#35bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["专业知识"]["合计"].备注);
+                        $("#31z").val(appraisalJson[i].value311);
+                        $("#31j").val(appraisalJson[i].value312);
+                        $("#31bei").val(appraisalJson[i].value313);
+                        $("#32z").val(appraisalJson[i].value321);
+                        $("#32j").val(appraisalJson[i].value322);
+                        $("#32bei").val(appraisalJson[i].value323);
+                        $("#33z").val(appraisalJson[i].value331);
+                        $("#33j").val(appraisalJson[i].value332);
+                        $("#33bei").val(appraisalJson[i].value333);
+                        $("#34z").val(appraisalJson[i].value341);
+                        $("#34j").val(appraisalJson[i].value342);
+                        $("#34bei").val(appraisalJson[i].value343);
+                        $("#35z").val(appraisalJson[i].value351);
+                        $("#35j").val(appraisalJson[i].value352);
+                        $("#35bei").val(appraisalJson[i].value353);
 
-                        $("#41z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].直接领导考核);
-                        $("#41j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].分管领导考核);
-                        $("#41bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["1"].备注);
-                        $("#42z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].直接领导考核);
-                        $("#42j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].分管领导考核);
-                        $("#42bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["2"].备注);
-                        $("#43z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].直接领导考核);
-                        $("#43j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].分管领导考核);
-                        $("#43bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["3"].备注);
-                        $("#44z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].直接领导考核);
-                        $("#44j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].分管领导考核);
-                        $("#44bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["4"].备注);
-                        $("#45z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].直接领导考核);
-                        $("#45j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].分管领导考核);
-                        $("#45bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["工作能力"]["合计"].备注);
+                        $("#41z").val(appraisalJson[i].value411);
+                        $("#41j").val(appraisalJson[i].value412);
+                        $("#41bei").val(appraisalJson[i].value413);
+                        $("#42z").val(appraisalJson[i].value421);
+                        $("#42j").val(appraisalJson[i].value422);
+                        $("#42bei").val(appraisalJson[i].value423);
+                        $("#43z").val(appraisalJson[i].value431);
+                        $("#43j").val(appraisalJson[i].value432);
+                        $("#43bei").val(appraisalJson[i].value433);
+                        $("#44z").val(appraisalJson[i].value441);
+                        $("#44j").val(appraisalJson[i].value442);
+                        $("#44bei").val(appraisalJson[i].value443);
+                        $("#45z").val(appraisalJson[i].value451);
+                        $("#45j").val(appraisalJson[i].value452);
+                        $("#45bei").val(appraisalJson[i].value453);
 
-                        $("#5z").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].直接领导考核);
-                        $("#5j").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].分管领导考核);
-                        $("#5bei").val(tempJson[index]["趋势表"]["日期"][i]["表"]["统计"].备注);
-
-
+                        $("#5z").val(appraisalJson[i].value51);
+                        $("#5j").val(appraisalJson[i].value52);
+                        $("#5bei").val(appraisalJson[i].value53);
                         return;
                     }else{
                         continue;
@@ -303,98 +310,192 @@ $(function () {
                 //没有找到
                 alert(year+'年'+month+'月'+"还没有考评表！");
                 $('input').val("");//置空
+                return;
             }else{
-                // alert("还没有index！");
                 $('input').val("");//置空
+                return;
             }
         }else {
             $('input').val("");//置空
+            return;
         }
     }
-
     //table修改函数
     $('#alter').unbind('click').bind('click',function () {
         $('input').attr("disabled",false);
-        alert('你现在可以修改表格！');
+        alert('你现在可以修改/创建表格！');
     });
 
-    //点击保存按钮将修改的数据保存到localStorage中
+    //点击保存按钮将修改的数据保存到数据库中
     $('#save').unbind('click').bind('click',function () {
         $('.content,.remark').attr('disabled','disabled');
-        //判断日期是否准确
+            //先判断数据库中是否有改用户、对应时间的记录
+            if(year==tableYear&&month==tableMonth&&treeNodeInfo.id==tableID){
+                //数据库中有该用户，将修改网页的表单值传入数据库中
+                flag1 = 1;
+                $.post("./conn3.php",{
+                    id: tableID,
+                    year: tableYear,
+                    month:tableMonth,
+                    flag:flag1,
+                    VALUE111:$("#11z").val(),
+                    VALUE112:$("#11j").val(),
+                    VALUE113:$("#11bei").val(),
+                    VALUE121:$("#12z").val(),
+                    VALUE122:$("#12j").val(),
+                    VALUE123:$("#12bei").val(),
+                    VALUE131:$("#13z").val(),
+                    VALUE132:$("#13j").val(),
+                    VALUE133:$("#13bei").val(),
+                    VALUE141:$("#14z").val(),
+                    VALUE142:$("#14j").val(),
+                    VALUE143:$("#14bei").val(),
+                    VALUE151:$("#15z").val(),
+                    VALUE152:$("#15j").val(),
+                    VALUE153:$("#15bei").val(),
 
-            //修改JSON对应的值
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["1"].直接领导考核=$("#11z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["1"].分管领导考核=$("#11j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["1"].备注=$("#11bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["2"].直接领导考核=$("#12z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["2"].分管领导考核=$("#12j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["2"].备注=$("#12bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["3"].直接领导考核=$("#13z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["3"].分管领导考核=$("#13j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["3"].备注=$("#13bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["4"].直接领导考核=$("#14z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["4"].分管领导考核=$("#14j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["4"].备注=$("#14bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["合计"].直接领导考核=$("#15z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["合计"].分管领导考核=$("#15j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["合计"].备注=$("#15bei").val();
+                    VALUE211:$("#21z").val(),
+                    VALUE212:$("#21j").val(),
+                    VALUE213:$("#21bei").val(),
+                    VALUE221:$("#22z").val(),
+                    VALUE222:$("#22j").val(),
+                    VALUE223:$("#22bei").val(),
+                    VALUE231:$("#23z").val(),
+                    VALUE232:$("#23j").val(),
+                    VALUE233:$("#23bei").val(),
+                    VALUE241:$("#24z").val(),
+                    VALUE242:$("#24j").val(),
+                    VALUE243:$("#24bei").val(),
+                    VALUE251:$("#25z").val(),
+                    VALUE252:$("#25j").val(),
+                    VALUE253:$("#25bei").val(),
 
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["1"].直接领导考核=$("#21z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["1"].分管领导考核=$("#21j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["1"].备注=$("#21bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["2"].直接领导考核=$("#22z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["2"].分管领导考核=$("#22j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["2"].备注=$("#22bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["3"].直接领导考核=$("#23z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["3"].分管领导考核=$("#23j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["3"].备注=$("#23bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["4"].直接领导考核=$("#24z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["4"].分管领导考核=$("#24j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["4"].备注=$("#24bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["合计"].直接领导考核=$("#25z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["合计"].分管领导考核=$("#25j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["合计"].备注=$("#25bei").val();
+                    VALUE311:$("#31z").val(),
+                    VALUE312:$("#31j").val(),
+                    VALUE313:$("#31bei").val(),
+                    VALUE321:$("#32z").val(),
+                    VALUE322:$("#32j").val(),
+                    VALUE323:$("#32bei").val(),
+                    VALUE331:$("#33z").val(),
+                    VALUE332:$("#33j").val(),
+                    VALUE333:$("#33bei").val(),
+                    VALUE341:$("#34z").val(),
+                    VALUE342:$("#34j").val(),
+                    VALUE343:$("#34bei").val(),
+                    VALUE351:$("#35z").val(),
+                    VALUE352:$("#35j").val(),
+                    VALUE353:$("#35bei").val(),
 
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["1"].直接领导考核=$("#31z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["1"].分管领导考核=$("#31j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["1"].备注=$("#31bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["2"].直接领导考核=$("#32z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["2"].分管领导考核=$("#32j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["2"].备注=$("#32bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["3"].直接领导考核=$("#33z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["3"].分管领导考核=$("#33j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["3"].备注=$("#33bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["4"].直接领导考核=$("#34z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["4"].分管领导考核=$("#34j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["4"].备注=$("#34bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["合计"].直接领导考核=$("#35z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["合计"].分管领导考核=$("#35j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["合计"].备注=$("#35bei").val();
+                    VALUE411:$("#41z").val(),
+                    VALUE412:$("#41j").val(),
+                    VALUE413:$("#41bei").val(),
+                    VALUE421:$("#42z").val(),
+                    VALUE422:$("#42j").val(),
+                    VALUE423:$("#42bei").val(),
+                    VALUE431:$("#43z").val(),
+                    VALUE432:$("#43j").val(),
+                    VALUE433:$("#43bei").val(),
+                    VALUE441:$("#44z").val(),
+                    VALUE442:$("#44j").val(),
+                    VALUE443:$("#44bei").val(),
+                    VALUE451:$("#45z").val(),
+                    VALUE452:$("#45j").val(),
+                    VALUE453:$("#45bei").val(),
 
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["1"].直接领导考核=$("#41z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["1"].分管领导考核=$("#41j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["1"].备注=$("#41bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["2"].直接领导考核=$("#42z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["2"].分管领导考核=$("#42j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["2"].备注=$("#42bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["3"].直接领导考核=$("#43z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["3"].分管领导考核=$("#43j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["3"].备注=$("#43bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["4"].直接领导考核=$("#44z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["4"].分管领导考核=$("#44j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["4"].备注=$("#44bei").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["合计"].直接领导考核=$("#45z").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["合计"].分管领导考核=$("#45j").val();
-            tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["合计"].备注=$("#45bei").val();
+                    VALUE51:$("#5z").val(),
+                    VALUE52:$("#5j").val(),
+                    VALUE53:$("#5bei").val()
+                },function (data,status) {
+                    alert("数据：\n"+data+"\n状态："+status);
+                });
+                 flag1 = 0;//复原
+            }else{
+                //没有找到，表明数据库中没有该用户，flag1=0
+                //向数据库中添加新的记录，并在页面上显示
+                $.post("./conn3.php",{
+                    id: treeNodeInfo.id,
+                    name:treeNodeInfo.name,
+                    year: year,
+                    month:month,
+                    VALUE111:$("#11z").val(),
+                    VALUE112:$("#11j").val(),
+                    VALUE113:$("#11bei").val(),
+                    VALUE121:$("#12z").val(),
+                    VALUE122:$("#12j").val(),
+                    VALUE123:$("#12bei").val(),
+                    VALUE131:$("#13z").val(),
+                    VALUE132:$("#13j").val(),
+                    VALUE133:$("#13bei").val(),
+                    VALUE141:$("#14z").val(),
+                    VALUE142:$("#14j").val(),
+                    VALUE143:$("#14bei").val(),
+                    VALUE151:$("#15z").val(),
+                    VALUE152:$("#15j").val(),
+                    VALUE153:$("#15bei").val(),
 
-            tempJson[index]["趋势表"]["日期"][m]["表"]["统计"].直接领导考核 = $("#5z").val;
-            tempJson[index]["趋势表"]["日期"][m]["表"]["统计"].分管领导考核 = $("#5j").val;
-            tempJson[index]["趋势表"]["日期"][m]["表"]["统计"].备注 = $("#5bei").val;
-            //存入localStorage
-            localStorage.setItem('table',JSON.stringify(tempJson));
+                    VALUE211:$("#21z").val(),
+                    VALUE212:$("#21j").val(),
+                    VALUE213:$("#21bei").val(),
+                    VALUE221:$("#22z").val(),
+                    VALUE222:$("#22j").val(),
+                    VALUE223:$("#22bei").val(),
+                    VALUE231:$("#23z").val(),
+                    VALUE232:$("#23j").val(),
+                    VALUE233:$("#23bei").val(),
+                    VALUE241:$("#24z").val(),
+                    VALUE242:$("#24j").val(),
+                    VALUE243:$("#24bei").val(),
+                    VALUE251:$("#25z").val(),
+                    VALUE252:$("#25j").val(),
+                    VALUE253:$("#25bei").val(),
 
-        alert('保存成功！');
+                    VALUE311:$("#31z").val(),
+                    VALUE312:$("#31j").val(),
+                    VALUE313:$("#31bei").val(),
+                    VALUE321:$("#32z").val(),
+                    VALUE322:$("#32j").val(),
+                    VALUE323:$("#32bei").val(),
+                    VALUE331:$("#33z").val(),
+                    VALUE332:$("#33j").val(),
+                    VALUE333:$("#33bei").val(),
+                    VALUE341:$("#34z").val(),
+                    VALUE342:$("#34j").val(),
+                    VALUE343:$("#34bei").val(),
+                    VALUE351:$("#35z").val(),
+                    VALUE352:$("#35j").val(),
+                    VALUE353:$("#35bei").val(),
+
+                    VALUE411:$("#41z").val(),
+                    VALUE412:$("#41j").val(),
+                    VALUE413:$("#41bei").val(),
+                    VALUE421:$("#42z").val(),
+                    VALUE422:$("#42j").val(),
+                    VALUE423:$("#42bei").val(),
+                    VALUE431:$("#43z").val(),
+                    VALUE432:$("#43j").val(),
+                    VALUE433:$("#43bei").val(),
+                    VALUE441:$("#44z").val(),
+                    VALUE442:$("#44j").val(),
+                    VALUE443:$("#44bei").val(),
+                    VALUE451:$("#45z").val(),
+                    VALUE452:$("#45j").val(),
+                    VALUE453:$("#45bei").val(),
+
+                    VALUE51:$("#5z").val(),
+                    VALUE52:$("#5j").val(),
+                    VALUE53:$("#5bei").val()
+                },function (data,status) {
+                    alert("数据：\n"+data+"\n状态："+status);
+                });
+                alert("创建成功！");
+            }
+        //动态刷新appraisalJson,并在页面上显示
+        $.get("./conn2.php",function (data,status) {
+            //data为object
+            appraisalJson = data;
+            console.log(appraisalJson);
+            drawData();
+        });
     });
 
     //趋势键
@@ -405,13 +506,9 @@ $(function () {
         }else{
             window.location.href = "appraisalChart.html";
         }
-
     });
 
     //appraisalChart网页JS
-
-
-
     layui.use('laydate', function(){
         var laydate = layui.laydate;
         //执行一个laydate实例
@@ -423,17 +520,14 @@ $(function () {
                 year = JSON.stringify(date.year); //获取年
                 month = JSON.stringify(date.month); //获取月
                 if(treeNodeInfo!=null&&treeNodeInfo.level==2){
-                    if(tempJson.hasOwnProperty(index)){
-                        for(var j=0;j<tempJson[index]["趋势表"]["日期"].length;j++){
-                            if(year==treeNodeInfo.趋势表["日期"][j]["年"]&&
-                                month==treeNodeInfo.趋势表["日期"][j]["月"]){
-                                m = j;
-
+                    for(var i=0;i<appraisalJson.length;i++){
+                        tableYear = appraisalJson[i].yearMonth.split('.')[0];
+                        tableMonth = appraisalJson[i].yearMonth.split('.')[1];
+                        tableID = appraisalJson[i].id;
+                        if(year==tableYear&&month==tableMonth&&treeNodeInfo.id==tableID){
                                 //更改eChart图标信息
                                 // 基于准备好的dom，初始化echarts实例
                                 var myChart = echarts.init($("#main").get(0),'dark');  //jQuery对象转换成dom对象
-
-
 
                                 // 指定图表的配置项和数据
                                 var option = {
@@ -464,27 +558,27 @@ $(function () {
                                         dimensions:['item','1','2','3','4','合计'],
                                         source:[
                                             //第一张表的数据
-                                            {item:'个人素质','1':tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["1"].直接领导考核,
-                                                '2':tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["2"].直接领导考核,
-                                                '3':tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["3"].直接领导考核,
-                                                '4':tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["4"].直接领导考核},
-                                            {item:'工作态度','1':tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["1"].直接领导考核,
-                                                '2':tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["2"].直接领导考核,
-                                                '3':tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["3"].直接领导考核,
-                                                '4':tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["4"].直接领导考核},
-                                            {item:'专业知识','1':tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["1"].直接领导考核,
-                                                '2':tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["2"].直接领导考核,
-                                                '3':tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["3"].直接领导考核,
-                                                '4':tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["4"].直接领导考核},
-                                            {item:'工作能力','1':tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["1"].直接领导考核,
-                                                '2':tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["2"].直接领导考核,
-                                                '3':tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["3"].直接领导考核,
-                                                '4':tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["4"].直接领导考核},
+                                            {item:'个人素质','1':appraisalJson[i].value111,
+                                                '2':appraisalJson[i].value121,
+                                                '3':appraisalJson[i].value131,
+                                                '4':appraisalJson[i].value141},
+                                            {item:'工作态度','1':appraisalJson[i].value211,
+                                                '2':appraisalJson[i].value221,
+                                                '3':appraisalJson[i].value231,
+                                                '4':appraisalJson[i].value241},
+                                            {item:'专业知识','1':appraisalJson[i].value311,
+                                                '2':appraisalJson[i].value321,
+                                                '3':appraisalJson[i].value331,
+                                                '4':appraisalJson[i].value341},
+                                            {item:'工作能力','1':appraisalJson[i].value411,
+                                                '2':appraisalJson[i].value421,
+                                                '3':appraisalJson[i].value431,
+                                                '4':appraisalJson[i].value441},
                                             // //第二张表的数据
-                                            {item:'个人素质','合计':tempJson[index]["趋势表"]["日期"][m]["表"]["个人素质"]["合计"].直接领导考核},
-                                            {item:'工作态度','合计':tempJson[index]["趋势表"]["日期"][m]["表"]["工作态度"]["合计"].直接领导考核},
-                                            {item:'专业知识','合计':tempJson[index]["趋势表"]["日期"][m]["表"]["专业知识"]["合计"].直接领导考核},
-                                            {item:'工作能力','合计':tempJson[index]["趋势表"]["日期"][m]["表"]["工作能力"]["合计"].直接领导考核}
+                                            {item:'个人素质','合计':appraisalJson[i].value151},
+                                            {item:'工作态度','合计':appraisalJson[i].value251},
+                                            {item:'专业知识','合计':appraisalJson[i].value351},
+                                            {item:'工作能力','合计':appraisalJson[i].value451}
 
                                         ]
                                     },
@@ -532,9 +626,72 @@ $(function () {
                     }else{
                         alert("没有考评表信息！");
                     }
-                }else alert("没有选择结点！");
+
             }
         });
     });
+
+    //抖动动画
+    jQuery.fn.shake = function (intShakes /*Amount of shakes*/, intDistance /*Shake distance*/, intDuration /*Time duration*/) {
+        this.each(function () {
+            var jqNode = $(this);
+            jqNode.css({ position: 'relative' });
+            for (var x = 1; x <= intShakes; x++) {
+                jqNode.animate({ left: (intDistance * -1) }, (((intDuration / intShakes) / 4)))
+                    .animate({ left: intDistance }, ((intDuration / intShakes) / 2))
+                    .animate({ left: 0 }, (((intDuration / intShakes) / 4)));
+            }
+        });
+        return this;
+    };
+
+
+    //树状导航栏搜索框业务
+    $('#searchConfirm').unbind('click').bind('click',search)
+    //搜索框回车进行搜索
+    $('#searchContent').bind('keydown',function (event) {
+        var event = window.event || arguments.callee.caller.arguments[0];
+        if(event.keyCode == 13){
+            search();
+        }
+    })
+    //搜索框搜索函数
+    function search(){
+        let flag = false;
+        var searchContent = $('#searchContent').val();
+        //非数字字符串类型判断为以名字进行搜索
+        if(typeof(searchContent) == 'string'&& !(/^\d+$/.test(searchContent))){
+            ztreeJson.forEach(function (item) {
+                if(searchContent == item.name){
+                    //根据名字获取某个结点
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    var treeNode = zTree.getNodeByParam("name",searchContent);
+                    //设置结点为选中状态
+                    zTree.selectNode(treeNode);
+                    //调用ztreeOnclick 函数使结点信息渲染到右侧表格
+                    ztreeOnclick(event,'treeDemo',treeNode);
+                    flag = true;
+                }
+            })
+        }else if(/^\d+$/.test(searchContent)){        /*数组类型字符串以工号进行搜寻*/
+            zNodes.forEach(function (item) {
+                if(searchContent == item.工号){
+                    //更加工号获取某个结点
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    var treeNode = zTree.getNodeByParam("工号",searchContent);
+                    //设置结点为选中状态
+                    zTree.selectNode(treeNode);
+                    //调用ztreeOnclick 函数使结点信息渲染到右侧表格
+                    ztreeOnclick(event,'treeDemo',treeNode);
+                    flag = true;
+                }
+            })
+        }
+        if(flag == false){
+            $('#searchContent').val('')
+            $('#searchContent').attr('placeholder','请输入正确的名字或工号');
+            $("#searchContent").shake(2, 10, 400);        /*调用抖动动画*/
+        }
+    }
 });
 

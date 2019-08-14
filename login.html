@@ -16,6 +16,17 @@
             -o-background-size: cover;
             background-color: #fff;
         }
+        .loginError{
+            display: inline-block;
+            position: absolute;
+            right: 3px;
+            margin-top: 6px;
+            color: red;
+            visibility: hidden ;
+        }
+        /*#userLogin{*/
+        /*    float: left;*/
+        /*}*/
     </style>
 </head>
 <body>
@@ -29,7 +40,8 @@
             <div class="loginUserName">
                 <div class="user">
                     <img src="imgs/userLogin.png" alt="">
-                    <input type="text" class="loginUserText" placeholder="用户名">
+                    <input type="text" id="loginUserText" placeholder="用户名">
+                    <span class = "loginError" id = "userNameError">用户名错误</span>
                 </div>
                 <!--忘记用户名-->
                 <div class="needPrompt">
@@ -40,9 +52,10 @@
             <div class="passwordText">
                 <div class = "beforeEye">
                     <img src="imgs/password.png" alt="">
-                    <input type="password" class="password" placeholder="密码">
+                    <input type="password" id="password" placeholder="密码">
                 </div>
                 <img src="imgs/eyeClose.png" alt="" id = "loginEyePassword">
+                <span class = "loginError" id = "passWordError">密码错误</span>
             </div>
             <!--忘记密码-->
             <div class="needPrompt">
@@ -51,7 +64,7 @@
         </div>
         <!--登录按钮-->
         <div class = "loginButton row">
-            <a href="archivesManagement.html">
+            <a>
                 <button type="button" class="btn btn-info btn-lg " id="loginBut">登录</button>
             </a>
         </div>

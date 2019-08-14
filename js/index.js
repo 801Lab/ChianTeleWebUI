@@ -1,16 +1,61 @@
 $(function(){
-	//登录界面JS
+    //登录界面JS
     $('#loginEyePassword').click(function () {
-        let pass_type = $('input.password').attr('type');
+        let pass_type = $('input#password').attr('type');
         if (pass_type === 'password' ){
-            $('input.password').attr('type', 'text');      //设置属性
+            $('input#password').attr('type', 'text');      //设置属性
             // $('.show_pass').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
             $('#loginEyePassword').attr('src','imgs/eyeOpen.png')
         } else {
-            $('input.password').attr('type', 'password');
+            $('input#password').attr('type', 'password');
             // $('.show_pass').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
             $('#loginEyePassword').attr('src','imgs/eyeClose.png')
         }
+    })
+
+    //用户名输入框获得焦点后隐藏“用户名错误”
+    $('#loginUserText').focus(function () {
+        $('#userNameError').css('visibility','hidden');
+        $('#passWordError').css('visibility','hidden');
+    })
+    //用户名输入框获得焦点后隐藏“密码错误”
+    $('#password').focus(function () {
+        $('#passWordError').css('visibility','hidden');
+        $('#loginEyePassword').css('visibility','visible');
+    })
+
+    //登录按钮
+    $('#loginBut').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: './login.php',
+            // contentType: 'application/json;charset=utf-8',
+            dataType:'json',
+            data:{
+                'userName':$('#loginUserText').val(),
+                'passWord':$('#password').val().replace(/[^0-9]/gi,'')           //将密码中的非数字类型去掉
+            },
+            async:false,
+            success:function (data) {
+                switch (data.code) {
+                    //用户名错误
+                    case 0:$('#userNameError').css('visibility','visible')
+                        break;
+                    //密码错误
+                    case 1:
+                        $('#loginEyePassword').css('visibility','hidden')
+                        $('#passWordError').css('visibility','visible')
+                        // console.log(data.result);
+                        break;
+                    default:  window.location.href = './archivesManagement.html'
+                }
+            },
+            error:function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            }
+        })
     })
 
     //档案管理界面JS
@@ -32,9 +77,6 @@ $(function(){
                 enable: true
             }
         },
-        // check: {
-        //     enable: true
-        // },
         edit: {
             enable: true,
             showRemoveBtn: true,
@@ -50,7 +92,26 @@ $(function(){
         }
     };
 
-    var zNodes = JSON.parse(localStorage.getItem('cmts') || '[]');         /*从localStorage获取数据*/
+    var zNodes ;     /*定义全局变量，用来生成树*/
+
+    //从数据库获取数据
+    $.ajax({
+        type: 'POST',
+        url: './archiveManagement.php',
+        dataType: 'json',
+        async:false,
+        data:{
+            'flag': 0
+        },
+        success:function (data) {
+            zNodes = data;              //为zNode赋值
+        },
+        error:function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(XMLHttpRequest.status);
+            alert(XMLHttpRequest.readyState);
+            alert(textStatus);
+        }
+    })
 
     $(document).ready(function(){
         $.fn.zTree.init($("#treeDemo"), setting, zNodes);  //初始化
@@ -59,7 +120,7 @@ $(function(){
     
     // 添加新结点
     function addHoverDom(treeId, treeNode) {
-        var newId = (new Date()).valueOf()                     //生产时间戳作为新节点的id
+        var newId = parseInt(((new Date()).valueOf())/1000);         //生产时间戳作为新节点的id
         var sObj = $("#" + treeNode.tId + "_span");
         if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
         var addStr = "<span class='button add' id='addBtn_" + treeNode.tId //id
@@ -71,10 +132,27 @@ $(function(){
             $('.closeModal,#modalAddconfirm').unbind('click').bind('click',function (event) {
                 if(event.target.id == 'modalAddconfirm'){
                     var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-                    // zTree.addNodes(treeNode, {id:newId, pId:treeNode.id, name:$('#addInput').val()});
-                    zNodes.push({id: newId,pId: treeNode.id,name: $('#addInput').val(),"身份证号":'',"性别": "","手机号": '', "工号": '', "岗位": '',
-                        '毕业学校': '','家庭住址': {"省份": "省份", "市": '地级市'},"最高学历": '',"籍贯":{"省份": "省份","市": "地级市"},"政治面貌": '',"入职时间": ""});
-                    localStorage.setItem('cmts',JSON.stringify(zNodes));
+                    //尝试使用 ajax 添加结点
+                    $.ajax({
+                        type: 'POST',
+                        url: './archiveManagement.php',
+                        dataType: 'json',
+                        async: false,
+                        data: {
+                            'id': treeNode.personId,
+                            'deptId': newId,
+                            'deptPid': treeNode.id,
+                            'deptName': $('#addInput').val(),
+                            'flag': 4
+                        },
+                        success:function (data) {
+                            zNodes = data;
+                            // console.log(data);
+                        },
+                        error:function () {
+                            alert('操作失败llll');
+                        }
+                    })
                     $.fn.zTree.init($("#treeDemo"), setting, zNodes);           //重新加载ztree树
                     zTree.selectNode(zTree.getNodeByParam("id",newId ),true);                      //设置结点为选中状态
                     ztreeOnclick(event,'treeDemo',zTree.getNodeByParam("id",newId ));                //将被选中的结点信息渲染到右边表格
@@ -98,57 +176,66 @@ $(function(){
     }
     var checkedPeople;
 
-    //删除节点
-    function beforeRemove(treeId, treeNode) {
-        $("#modalDel").modal({});   //调用bootstrap模态框
-        $('#modalBody').append("确定删除" + treeNode.name + "?");    //为模态框动态添加内容
-        $('.close,.closeModal,#confirm').unbind('click').bind('click',function (event) {
-            if(event.target.id == 'confirm'){
-                var zTree = $.fn.zTree.getZTreeObj(treeId);
-                zTree.removeNode(treeNode)
-            }else if(event.target.class == 'close'){
-                $('#modalBody').empty();  //点×时将模态框内容置空
-            }
-             $('#modalBody').empty();                /*取消、确认模态框时将模态框内容置空*/
-            $('#modalDel').modal('toggle')          /*关闭模态框*/
-        });
-        return false;
-    }
     //点击人员后将人员信息渲染到右边表格中
     function ztreeOnclick(event,treeId, treeNode){
+        //尝试从oss_archivesmanagementtable表中获取一个人的记录
+        var selectedPersonInfo;
+        $.ajax({
+            type: 'POST',
+            url: './archiveManagement.php',
+            dataType: 'json',
+            async: false,
+            data: {
+                'id': treeNode.personId,
+                'flag': 1
+            },
+            success:function (data) {
+                selectedPersonInfo = data;
+            },
+            error:function () {
+                alert('错误了！');
+            }
+        })
         if(treeNode.level == 2){
-            $('#name').val(treeNode.name);
-            $('#idNumber').val(treeNode.身份证号);
-            $('#genderSelect').val(treeNode.性别);
-            $('#phoneNumber').val(treeNode.手机号);
-            $('#jobNumber').val(treeNode.工号);
-            $('#position').val(treeNode.岗位);
-            $('#school').val(treeNode.毕业学校);
-            $('#s_province').val(treeNode.家庭住址.省份);
+            $('#name').val(selectedPersonInfo[0].name);
+            $('#idNumber').val(selectedPersonInfo[0].personIDNum);
+            if(selectedPersonInfo[0].gender == 1){
+                $('#genderSelect').val('男');
+            }else{
+                $('#genderSelect').val('女');
+            }
+            $('#phoneNumber').val(selectedPersonInfo[0].phoneNum);
+            $('#jobNumber').val(selectedPersonInfo[0].jobNum);
+            $('#position').val(selectedPersonInfo[0].jobPosition);
+            $('#school').val(selectedPersonInfo[0].school);
+            $('#s_province').val(selectedPersonInfo[0].familyAdd_province);
             $('#s_city').append($('<option>', {
-                text: treeNode.家庭住址.市,
+                text: selectedPersonInfo[0].familyAdd_city,
                 selected: true
             }));
-            $('#eduBack').val(treeNode.最高学历);
-            $('#s_province1').val(treeNode.籍贯.省份);
+            // console.log(selectedPersonInfo)
+            $('#eduBack').val(selectedPersonInfo[0].eduBackground);
+            $('#s_province1').val(selectedPersonInfo[0].nativePlace_province);
             $('#s_city1').append($('<option>', {
-                text: treeNode.籍贯.市,
+                text: selectedPersonInfo[0].nativePlace_city,
                 selected: true
             }));
-            $("input[type=radio][name=options]").val([treeNode.政治面貌]);
-            $('#entryTime').val(treeNode.入职时间)
+            $("input[type=radio][name=options]").val([selectedPersonInfo[0].politicsBackground]);
+            $('#entryTime').val(selectedPersonInfo[0].entryTime)
+            $('#demo1').attr('src', selectedPersonInfo[0].photo); //图片链接（base64）
+
 
         //    工资导入界面的业务逻辑
             if($("#salarySlipTable").find("tr").length > 1){
                 $("#salarySlipTable tr:last").remove();
             }
             $('#salarySlipTable').append(
-                '<tr><td>'+ treeNode.工号 +'</td><td>'+ treeNode.name +'</td><td>'+ treeNode.工资.级别 +'</td><td>'+ treeNode.工资.高新技术补贴 +
-                '</td><td>'+ treeNode.工资.请假扣款 +'</td><td>'+ treeNode.工资.基本薪酬 +'</td><td>'+ treeNode.工资.住房补贴 +'</td><td>'
-                + treeNode.工资.违纪扣款 +'</td><td>'+ treeNode.工资.加班薪酬 +'</td><td>'+  treeNode.工资.交通补贴 +'</td><td>'+ treeNode.工资.五险一金
-                +'</td><td>'+ treeNode.工资.应发工资 +'</td><td>'+ treeNode.工资.实发工资 +'</td></tr>'
+                '<tr><td>'+ selectedPersonInfo[0].jobNum +'</td><td>'+ selectedPersonInfo[0].name +'</td><td>'+ selectedPersonInfo[0].level +'</td><td>'+ selectedPersonInfo[0].highTechSub +
+                '</td><td>'+ selectedPersonInfo[0].leaveDeductMoney +'</td><td>'+ selectedPersonInfo[0].basicMoney +'</td><td>'+ selectedPersonInfo[0].houseSub +'</td><td>'
+                + selectedPersonInfo[0].breakRuleDeductMoney +'</td><td>'+ selectedPersonInfo[0].overTimeMoney +'</td><td>'+  selectedPersonInfo[0].trafficMoney +'</td><td>'+ selectedPersonInfo[0].insuranceMoney
+                +'</td><td>'+ selectedPersonInfo[0].salary +'</td><td>'+ selectedPersonInfo[0].realSalary +'</td></tr>'
             )
-            checkedPeople = treeNode;
+            // checkedPeople = treeNode;
         }
     }
 
@@ -156,42 +243,51 @@ $(function(){
     $('#archivesChange').unbind('click').bind('click',function () {
         $('input').attr("disabled",false);
         $('select').attr('disabled',false);
+        $('#upPhoto').attr('disabled',false);
     })
-    //点击保存按钮将修改的数据保存到localStorage中
+    //点击保存按钮将修改的数据保存到数据库中
     $('#archivesSave').unbind('click').bind('click',function () {
         // 获取当前选中的结点
         var zTree = $.fn.zTree.getZTreeObj("treeDemo");
         var currentNode = zTree.getSelectedNodes()[0];
-        //遍历localstorage中的结点数据
-        zNodes.forEach(function (eachObj) {
-            // beforeRename;
-            if(eachObj.id == currentNode.id){
-                // console.log(eachObj.家庭住址.省份)
-                eachObj.name = $('#name').val();
-                eachObj.身份证号 = $('#idNumber').val();
-                eachObj.性别 = $('#genderSelect').val();
-                eachObj.手机号 = $('#phoneNumber').val();
-                eachObj.工号 = $('#jobNumber').val();
-                eachObj.岗位 = $('#position').val();
-                eachObj.毕业学校 = $('#school').val();
-                eachObj.家庭住址.省份 = $('#s_province').val();
-                eachObj.家庭住址.市 = $('#s_city').val()
-                eachObj.最高学历 = $('#eduBack').val();
-                eachObj.籍贯.省份 = $('#s_province1').val();
-                eachObj.籍贯.市 = $('#s_city1').val();
-                eachObj.政治面貌 = $("input[type=radio][name=options]:checked").val();
-                eachObj.入职时间 = $('#entryTime').val();
-            }
-        })
+
+        //尝试修改数据库中的数据
         $('#saveConfirm').unbind('click').bind('click',function () {
-            localStorage.setItem('cmts',JSON.stringify(zNodes));
-            $.fn.zTree.init($("#treeDemo"), setting, zNodes);           //重新加载ztree树
-            zTree.selectNode(currentNode);                      //设置结点为选中状态
+            $.ajax({
+                type: 'POST',
+                url: './archiveManagement.php',
+                dataType: 'json',
+                async: false,
+                data:{
+                    'name': $('#name').val(),
+                    'personIDNum': $('#idNumber').val(),
+                    'gender': $('#genderSelect').val(),
+                    'phoneNum': $('#phoneNumber').val(),
+                    'jobNum': $('#jobNumber').val(),
+                    'jobPosition': $('#position').val(),
+                    'school': $('#school').val(),
+                    'familyAdd_province': $('#s_province').val(),
+                    'familyAdd_city': $('#s_city').val(),
+                    'eduBackground': $('#eduBack').val(),
+                    'nativePlace_province': $('#s_province1').val(),
+                    'nativePlace_city': $('#s_city1').val(),
+                    'politicsBackground': $("input[type=radio][name=options]:checked").val(),
+                    'entryTime': $('#entryTime').val(),
+                    'id': currentNode.personId,
+                    'flag': 2
+                },
+                success:function (data) {
+                    zNodes = data;
+                },
+                error:function () {
+                    alert('失败了');
+                }
+            })
             $('#modalSave').modal('toggle');
         })
-        //设置不可编辑
         $('.main input').attr("disabled",true);
         $('select').attr('disabled',true);
+        $('#upPhoto').attr('disabled',true);
     })
 
 
@@ -213,24 +309,53 @@ $(function(){
         })
         return false;
     }
-    //将删除的结点移出zNodes，并保存至localstorage
+    //将删除的结点从数据库中删除
     function onRemove(treeNode) {
-       zNodes.forEach(function (item,index) {
-           if(item.id == treeNode.id){
-               zNodes.splice(index,1);        /*删除节点*/
-           }
-       })
-        localStorage.setItem('cmts',JSON.stringify(zNodes));
+        console.log(treeNode.personId);
+        $.ajax({
+            type: 'POST',
+            url: './archiveManagement.php',
+            dataType: 'json',
+            async: false,
+            data:{
+                'id': treeNode.personId,
+                'deptId': treeNode.id,
+                'flag': 3
+            },
+            success:function (data) {
+                zNodes = data;
+            },
+            error:function () {
+                alert('删除失败');
+            }
+        })
     }
 
     //拖拽结点
     function zTreeBeforeDrop(treeId, treeNodes, targetNode, moveType){
-        zNodes.forEach(function (item) {
-            if(item.id == treeNodes[0].id){
-                item.pId = targetNode.pId;
+        // console.log(treeNodes[0].id)
+        $.ajax({
+            type: 'POST',
+            url: './archiveManagement.php',
+            async: false,
+            data:{
+                'id': treeNodes[0].id,
+                'deptPid': targetNode.pId,
+                'flag': 5
+            },
+            success:function(data){
+                console.log(data);
+            },
+            error:function () {
+                alert('操作失败');
             }
         })
-        localStorage.setItem('cmts',JSON.stringify(zNodes));
+        // zNodes.forEach(function (item) {
+        //     if(item.id == treeNodes[0].id){
+        //         item.pId = targetNode.pId;
+        //     }
+        // })
+        // localStorage.setItem('cmts',JSON.stringify(zNodes));
     }
 
     //树状导航栏搜索框业务
@@ -261,6 +386,7 @@ $(function(){
 
     //搜索框搜索函数
     function search(){
+        console.log(zNodes);
         let flag = false;
         var searchContent = $('#searchContent').val();
         //非数字字符串类型判断为以名字进行搜索
@@ -279,10 +405,10 @@ $(function(){
             })
         }else if(/^\d+$/.test(searchContent)){        /*数组类型字符串以工号进行搜寻*/
             zNodes.forEach(function (item) {
-                if(searchContent == item.工号){
+                if(searchContent == item.personId){
                     //更加工号获取某个结点
                     var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-                    var treeNode = zTree.getNodeByParam("工号",searchContent);
+                    var treeNode = zTree.getNodeByParam("personId",searchContent);
                     //设置结点为选中状态
                     zTree.selectNode(treeNode);
                     //调用ztreeOnclick 函数使结点信息渲染到右侧表格
@@ -298,14 +424,29 @@ $(function(){
         }
     }
 
-
 //    图片上传
     layui.use('upload', function(){
-        var $ = layui.jquery
+        var $ = layui.$
             ,upload = layui.upload;
         var uploadInst = upload.render({
             elem: '#upPhoto'
-            ,url: '/upload/'
+            ,url: './archiveManagement.php'
+            ,method: 'POST'
+            ,accept: 'images'
+            // ,auto: false
+            // ,bindAction: '#archivesSave'
+            ,data:{
+                'flag': 8,
+                'id': function () {
+                    try {
+                        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                        var currentNode = zTree.getSelectedNodes()[0];
+                        return currentNode.personId;
+                    }catch (e) {
+                        alert('未选择人员')
+                    }
+                }
+            }
             ,before: function(obj){
                 //预读本地文件示例，不支持ie8
                 obj.preview(function(index, file, result){
@@ -318,6 +459,7 @@ $(function(){
                     return layer.msg('上传失败');
                 }
                 //上传成功
+                console.log(res)
             }
         });
     });
@@ -350,16 +492,6 @@ $(function(){
                 }, 1300);
             }
         });
-
-        //    工资管理界面点击确认导入后重新加载树状导航
-        $('#importConfirm').unbind('click').bind('click',function () {
-            var zNodes = JSON.parse(localStorage.getItem('cmts') || '[]');         /*从localStorage获取数据*/
-            $.fn.zTree.init($("#treeDemo"), setting, zNodes);        //重新加载数据
-            $('#modalImport').modal('toggle');                           //关闭模态框
-            // var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-            // var currentNode = zTree.getSelectedNodes()[0];
-            // zTree.selectNode(currentNode);                      //设置结点为选中状态
-        })
         // //城市联动
          _init_area();
          _init_area1();

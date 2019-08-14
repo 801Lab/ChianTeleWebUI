@@ -54,6 +54,7 @@
     height: 35px;
     margin-left: 15px;
     outline:none;
+    width: 150px;
 }
 /*忘记用户名？,忘记密码？,需要帮助？*/
 .needPrompt{
